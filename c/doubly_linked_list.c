@@ -1,6 +1,6 @@
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 
 typedef struct Node {
     int data;
@@ -9,12 +9,12 @@ typedef struct Node {
 } Node;
 
 typedef struct {
-    Node* head;
-    Node* tail;
+    Node *head;
+    Node *tail;
 } DoublyLList;
 
-DoublyLList* llist_new() {
-    DoublyLList* ll = malloc(sizeof(DoublyLList));
+DoublyLList *llist_new() {
+    DoublyLList *ll = malloc(sizeof(DoublyLList));
     ll->head = NULL;
     ll->tail = NULL;
 
@@ -25,10 +25,9 @@ DoublyLList* llist_new() {
     return ll;
 }
 
-
-void llist_free(DoublyLList* ll) {
-    Node* n = ll->head;
-    while(n != NULL) {
+void llist_free(DoublyLList *ll) {
+    Node *n = ll->head;
+    while (n != NULL) {
         free(n);
         n = n->next;
     }
@@ -36,8 +35,8 @@ void llist_free(DoublyLList* ll) {
     free(ll);
 }
 
-void llist_append(DoublyLList* ll, int data) {
-    Node* n = malloc(sizeof(Node));
+void llist_append(DoublyLList *ll, int data) {
+    Node *n = malloc(sizeof(Node));
 
     if (n == NULL) {
         return;
@@ -54,8 +53,8 @@ void llist_append(DoublyLList* ll, int data) {
     }
 }
 
-void llist_prepend(DoublyLList* ll, int data) {
-    Node* n = malloc(sizeof(Node));
+void llist_prepend(DoublyLList *ll, int data) {
+    Node *n = malloc(sizeof(Node));
 
     if (n == NULL) {
         return;
@@ -72,7 +71,7 @@ void llist_prepend(DoublyLList* ll, int data) {
     }
 }
 
-int llist_pop(DoublyLList* ll) {
+int llist_pop(DoublyLList *ll) {
     if (ll->head == NULL && ll->tail == NULL) {
         return INT_MAX;
     }
@@ -84,7 +83,7 @@ int llist_pop(DoublyLList* ll) {
     return data;
 }
 
-int llist_shift(DoublyLList* ll) {
+int llist_shift(DoublyLList *ll) {
     if (ll->head == NULL && ll->tail == NULL) {
         return INT_MAX;
     }
@@ -96,15 +95,78 @@ int llist_shift(DoublyLList* ll) {
     return data;
 }
 
-int main() {
-    DoublyLList* ll = llist_new();
+void llist_insert(DoublyLList *ll, int index, int data) {
+    Node *cur = ll->head;
+    while (index > 0 && cur != NULL) {
+        cur = cur->next;
+        index--;
+    }
 
-    for (int i = 0; i < 20; i++) {
+    if (cur == NULL) {
+        return;
+    }
+
+    Node *n = malloc(sizeof(Node));
+    if (n == NULL) {
+        return;
+    }
+
+    n->data = data;
+
+    if (ll->head == cur) {
+        ll->head = n;
+    } else {
+        cur->prev->next = n;
+        n->prev = cur->prev;
+    }
+
+    if (ll->tail == cur) {
+        ll->tail = n;
+    }
+
+    cur->prev = n;
+    n->next = cur;
+}
+
+void llist_delete(DoublyLList *ll, int index) {
+    Node *cur = ll->head;
+    while (index > 0 && cur != NULL) {
+        cur = cur->next;
+        index--;
+    }
+
+    if (cur == NULL) {
+        return;
+    }
+
+    if (ll->head == cur) {
+        ll->head = cur->next;
+    } else {
+        cur->prev->next = cur->next;
+    }
+
+    if (ll->tail == cur) {
+        ll->tail = cur->prev;
+    } else {
+        cur->next->prev = cur->prev;
+    }
+
+    free(cur);
+}
+
+int main() {
+    DoublyLList *ll = llist_new();
+
+    for (int i = 1; i <= 20; i++) {
         llist_append(ll, i);
     }
 
-    Node* n = ll->head;
-    while(n != NULL) {
+    for (int i = 0; i < 10; i++) {
+        llist_insert(ll, i, i * 10);
+    }
+
+    Node *n = ll->head;
+    while (n != NULL) {
         printf("%d\n", n->data);
         n = n->next;
     }
